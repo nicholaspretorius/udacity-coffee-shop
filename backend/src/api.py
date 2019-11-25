@@ -16,7 +16,7 @@ CORS(app)
 !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 '''
-db_drop_and_create_all()
+# db_drop_and_create_all()
 
 
 @app.after_request
@@ -103,6 +103,30 @@ def retrieve_drinks_long():
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks', methods=['POST'])
+def create_drink():
+    try:
+        body = request.get_json()
+
+        if body == {}:
+            abort(422)
+
+        title = body.get('title', None)
+        recipe = body.get('recipe', None)
+
+        if title is None or recipe is None:
+            abort(422)
+
+        new_drink = Drink(title=title, recipe=json.dumps(recipe))
+        new_drink.insert()
+
+        return jsonify({
+            'success': True,
+            'drink': Drink.query.get(new_drink.id).long()
+        })
+
+    except():
+        abort(422)
 
 
 '''
@@ -128,6 +152,20 @@ def retrieve_drinks_long():
     returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks/<int:drink_id>', methods=['DELETE'])
+def delete_drink(drink_id):
+    try:
+        drink = Drink.query.get(drink_id)
+
+        if drink is None:
+            abort(404)
+
+        drink.delete()
+
+        return jsonify({
+            'success': True,
+            'delete': drink_id
+        })
 
 
 # Error Handling
