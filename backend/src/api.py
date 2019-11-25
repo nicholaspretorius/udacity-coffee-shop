@@ -119,9 +119,13 @@ def create_drink():
         new_drink = Drink(title=title, recipe=json.dumps(recipe))
         new_drink.insert()
 
+        drinks = retrieve_drinks()
+        drinks_short = [drink.short() for drink in drinks]
+
         return jsonify({
             'success': True,
-            'drinks': Drink.query.get(new_drink.id).long()
+            'drinks': drinks_short,
+            'id': new_drink.id
         })
 
     except():
