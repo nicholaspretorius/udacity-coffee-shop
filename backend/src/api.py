@@ -121,7 +121,7 @@ def create_drink():
 
         return jsonify({
             'success': True,
-            'drink': Drink.query.get(new_drink.id).long()
+            'drinks': Drink.query.get(new_drink.id).long()
         })
 
     except():
