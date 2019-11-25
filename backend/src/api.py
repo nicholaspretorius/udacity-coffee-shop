@@ -140,6 +140,31 @@ def create_drink():
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks/<int:drink_id>', methods=['PATCH'])
+def update_drink(drink_id):
+    try:
+        body = request.get_json()
+
+        drink = Drink.query.get(drink_id)
+
+        if drink is None:
+            abort(404)
+
+        if 'title' in body:
+            drink.title = body.get('title')
+
+        # if 'recipe' in body:
+        #     drink.recipe = body.get('recipe')
+
+        drink.update()
+
+        return jsonify({
+            'success': True,
+            'drinks': Drink.query.get(drink.id).long()
+        })
+
+    except():
+        abort(422)
 
 
 '''
@@ -167,8 +192,12 @@ def delete_drink(drink_id):
             'delete': drink_id
         })
 
+    except():
+        abort(404)
+
 
 # Error Handling
+
 '''
 Example error handling for unprocessable entity
 '''
@@ -224,6 +253,15 @@ def forbidden(error):
         "success": False,
         "error": 403,
         "message": "forbidden"
+    }), 403
+
+
+@app.errorhandler(405)
+def method_not_allowed(error):
+    return jsonify({
+        "success": False,
+        "error": 405,
+        "message": "method not allowed"
     }), 403
 
 
