@@ -59,7 +59,6 @@ def retrieve_drinks_short():
     try:
         drinks = retrieve_drinks()
         drinks_short = [drink.short() for drink in drinks]
-        print('Drinks short: ', drinks_short)
 
         return jsonify({
             'success': True,
@@ -79,11 +78,11 @@ def retrieve_drinks_short():
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks-detail', methods=['GET'])
-def retrieve_drinks_long():
+@requires_auth()
+def retrieve_drinks_long(payload):
     try:
         drinks = retrieve_drinks()
         drinks_long = [drink.long() for drink in drinks]
-        print('Drinks long: ', drinks_long)
 
         return jsonify({
             'success': True,
@@ -91,7 +90,7 @@ def retrieve_drinks_long():
             'total': len(drinks_long)
         })
     except():
-        abort(500)
+        abort(401)
 
 
 '''
@@ -238,6 +237,16 @@ def not_found(error):
 @TODO implement error handler for AuthError
     error handler should conform to general task above 
 '''
+@app.errorhandler(AuthError)
+def auth_error(e):
+    print("Error: ", e, type(e))
+    return jsonify({
+        'success': False,
+        'error': e.status_code,
+        'message': e.error
+    })
+
+
 @app.errorhandler(400)
 def bad_request(error):
     return jsonify({
