@@ -78,7 +78,7 @@ def retrieve_drinks_short():
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks-detail', methods=['GET'])
-@requires_auth()
+@requires_auth('get:drinks-detail')
 def retrieve_drinks_long(payload):
     try:
         drinks = retrieve_drinks()
@@ -239,12 +239,11 @@ def not_found(error):
 '''
 @app.errorhandler(AuthError)
 def auth_error(e):
-    print("Error: ", e, type(e))
     return jsonify({
         'success': False,
         'error': e.status_code,
         'message': e.error
-    })
+    }), e.status_code
 
 
 @app.errorhandler(400)
