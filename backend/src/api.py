@@ -44,17 +44,27 @@ def hello_world():
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
-@app.route('/drinks')
+
+
 def retrieve_drinks():
     try:
         drinks = Drink.query.order_by('id').all()
+        return drinks
+    except():
+        abort(500)
+
+
+@app.route('/drinks', methods=['GET'])
+def retrieve_drinks_short():
+    try:
+        drinks = retrieve_drinks()
         drinks_short = [drink.short() for drink in drinks]
-        print('Drinks: ', drinks)
+        print('Drinks short: ', drinks_short)
 
         return jsonify({
             'success': True,
             'drinks': drinks_short,
-            'total': len(drinks)
+            'total': len(drinks_short)
         })
     except():
         abort(500)
@@ -68,6 +78,20 @@ def retrieve_drinks():
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks-detail', methods=['GET'])
+def retrieve_drinks_long():
+    try:
+        drinks = retrieve_drinks()
+        drinks_long = [drink.long() for drink in drinks]
+        print('Drinks long: ', drinks_long)
+
+        return jsonify({
+            'success': True,
+            'drinks': drinks_long,
+            'total': len(drinks_long)
+        })
+    except():
+        abort(500)
 
 
 '''
@@ -163,3 +187,12 @@ def forbidden(error):
         "error": 403,
         "message": "forbidden"
     }), 403
+
+
+@app.errorhandler(500)
+def server_error(error):
+    return jsonify({
+        "success": False,
+        "error": 500,
+        "message": "internal server error"
+    }), 500
