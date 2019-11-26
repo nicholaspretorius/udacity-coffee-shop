@@ -71,7 +71,7 @@ def retrieve_drinks_long(payload):
             'drinks': drinks_long,
             'total': len(drinks_long)
         })
-    except():
+    except AuthError:
         abort(401)
 
 
@@ -102,7 +102,7 @@ def create_drink(payload):
             'id': new_drink.id
         })
 
-    except():
+    except AuthError:
         abort(422)
 
 
@@ -127,7 +127,7 @@ def update_drink(payload, drink_id):
             'drinks': [Drink.query.get(drink.id).long()]
         })
 
-    except():
+    except AuthError:
         abort(422)
 
 
@@ -147,7 +147,7 @@ def delete_drink(payload, drink_id):
             'delete': drink_id
         })
 
-    except():
+    except AuthError:
         abort(404)
 
 
