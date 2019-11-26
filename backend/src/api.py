@@ -103,6 +103,7 @@ def retrieve_drinks_long(payload):
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks', methods=['POST'])
+@requires_auth('post:drinks')
 def create_drink():
     try:
         body = request.get_json()
@@ -144,6 +145,7 @@ def create_drink():
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks/<int:drink_id>', methods=['PATCH'])
+@requires_auth('patch:drinks')
 def update_drink(drink_id):
     try:
         body = request.get_json()
@@ -181,6 +183,7 @@ def update_drink(drink_id):
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks/<int:drink_id>', methods=['DELETE'])
+@requires_auth('delete:drinks')
 def delete_drink(drink_id):
     try:
         drink = Drink.query.get(drink_id)
