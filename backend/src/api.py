@@ -104,7 +104,7 @@ def retrieve_drinks_long(payload):
 '''
 @app.route('/drinks', methods=['POST'])
 @requires_auth('post:drinks')
-def create_drink():
+def create_drink(payload):
     try:
         body = request.get_json()
 
@@ -146,7 +146,7 @@ def create_drink():
 '''
 @app.route('/drinks/<int:drink_id>', methods=['PATCH'])
 @requires_auth('patch:drinks')
-def update_drink(drink_id):
+def update_drink(payload, drink_id):
     try:
         body = request.get_json()
 
@@ -158,14 +158,11 @@ def update_drink(drink_id):
         if 'title' in body:
             drink.title = body.get('title')
 
-        # if 'recipe' in body:
-        #     drink.recipe = body.get('recipe')
-
         drink.update()
 
         return jsonify({
             'success': True,
-            'drinks': Drink.query.get(drink.id).long()
+            'drinks': [Drink.query.get(drink.id).long()]
         })
 
     except():
@@ -184,7 +181,7 @@ def update_drink(drink_id):
 '''
 @app.route('/drinks/<int:drink_id>', methods=['DELETE'])
 @requires_auth('delete:drinks')
-def delete_drink(drink_id):
+def delete_drink(payload, drink_id):
     try:
         drink = Drink.query.get(drink_id)
 
